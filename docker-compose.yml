@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  tempo:
+    image: grafana/tempo:2.6.0
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP (querier)
+      - "4317:4317"   # OTLP gRPC (ingest)
+      - "4318:4318"   # OTLP HTTP (ingest)
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.114.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otel-collector-config.yaml:ro
+    depends_on:
+      - tempo
+    ports:
+      - "4319:4317"   # OTLP gRPC (collector) - exposed locally on 4319 to avoid clash with Tempo
+      - "4320:4318"   # OTLP HTTP (collector) - exposed locally on 4320
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./gateway
+    environment:
+      - OTLP_GRPC_ENDPOINT=otel-collector:4317
+      - HASH_SALT=${HASH_SALT}
+      - API_KEYS=${API_KEYS}
+      - GATEWAY_LOG_LEVEL=INFO
+    ports:
+      - "8080:8080"
+    depends_on:
+      - otel-collector
+    restart: unless-stopped
+
+volumes:
+  tempo-data:
