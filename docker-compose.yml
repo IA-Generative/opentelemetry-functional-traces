@@ -3,7 +3,8 @@ version: "3.9"
 services:
   tempo:
     image: grafana/tempo:2.6.0
-    command: ["-config.file=/etc/tempo.yaml"]
+    user: root
+    command: ["/tempo", "-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
       - tempo-data:/tmp/tempo
@@ -34,7 +35,7 @@ services:
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
     ports:
-      - "3000:3000"
+      - "3100:3000"
     depends_on:
       - tempo
     restart: unless-stopped
