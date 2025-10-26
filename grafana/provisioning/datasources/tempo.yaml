@@ -8,7 +8,5 @@ datasources:
     isDefault: true
     jsonData:
       httpMethod: GET
-      tracesToLogsV2:
-        datasourceUid: "loki"
       serviceMap:
-        datasourceUid: "tempo"
+        datasourceUid: "tempo"      

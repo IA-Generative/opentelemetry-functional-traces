@@ -46,7 +46,7 @@ def validate_api_key(api_key: Optional[str]) -> str:
     return api_key
 
 @app.post("/ingest")
-async def ingest(body: IngestBody, request: Request, x_api_key: Optional[str] = Header(default=None, convert_underscores=False)):
+async def ingest(body: IngestBody, request: Request, x_api_key: Optional[str] = Header(default=None)):
     key = validate_api_key(x_api_key)
     user_h = email_hash(body.user_email)
     client_ip = request.client.host if request.client else None

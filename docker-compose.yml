@@ -34,8 +34,9 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
     ports:
-      - "3100:3000"
+      - "3800:3000"
     depends_on:
       - tempo
     restart: unless-stopped

@@ -20,7 +20,8 @@ This repository provides a ready‑to‑run stack to **collect functional applic
 
 ## Quick start
 
-1. Copy `.env.sample` to `.env` and **edit** the secrets:
+1. Copy `.cd ..
+1. env.sample` to `.env` and **edit** the secrets:
    ```bash
    cp .env.sample .env
    # Edit HASH_SALT and API_KEYS
