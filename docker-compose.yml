@@ -7,7 +7,7 @@ services:
     command: ["/tempo", "-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
-      - tempo-data:/tmp/tempo
+      - ./tempo/data:/tmp/tempo
     ports:
       - "3200:3200"   # Tempo HTTP (querier)
       - "4317:4317"   # OTLP gRPC (ingest)
@@ -41,19 +41,19 @@ services:
       - tempo
     restart: unless-stopped
 
-  gateway:
-    build:
-      context: ./gateway
-    environment:
-      - OTLP_GRPC_ENDPOINT=otel-collector:4317
-      - HASH_SALT=${HASH_SALT}
-      - API_KEYS=${API_KEYS}
-      - GATEWAY_LOG_LEVEL=INFO
-    ports:
-      - "8080:8080"
-    depends_on:
-      - otel-collector
-    restart: unless-stopped
+  #gateway:
+  #  build:
+  #    context: ./gateway
+  #  environment:
+  #    - OTLP_GRPC_ENDPOINT=otel-collector:4317
+  #    - HASH_SALT=${HASH_SALT}
+  #    - API_KEYS=${API_KEYS}
+  #    - GATEWAY_LOG_LEVEL=INFO
+  #  ports:
+  #    - "8080:8080"
+  #  depends_on:
+  #    - otel-collector
+  #  restart: unless-stopped
 
 volumes:
   tempo-data:
